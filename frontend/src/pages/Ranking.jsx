@@ -56,10 +56,11 @@ export default function Ranking() {
       )}
 
       <div className="card">
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <div className="table-scroll">
+        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 500 }}>
           <thead>
             <tr style={{ borderBottom: `1px solid ${G.border}` }}>
-              {["#", "Jogador", "Vitórias", "Derrotas", "Taxa", "Saldo total"].map(h => (
+              {["#", "Jogador", "MVP", "Vitórias", "Derrotas", "Win Rate", "Saldo total"].map(h => (
                 <th key={h} style={{ textAlign: "left", padding: "8px 12px", fontSize: 11, color: G.textMuted, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.06em" }}>{h}</th>
               ))}
             </tr>
@@ -77,6 +78,7 @@ export default function Ranking() {
                       {p.name}
                     </div>
                   </td>
+                  <td style={{ padding: "12px", fontFamily: "'DM Mono', monospace", fontSize: 13, color: G.gold }}>{p.mvp_count ?? 0}</td>
                   <td style={{ padding: "12px", fontFamily: "'DM Mono', monospace", fontSize: 13, color: G.greenLt }}>{p.wins}</td>
                   <td style={{ padding: "12px", fontFamily: "'DM Mono', monospace", fontSize: 13, color: G.redLt }}>{p.losses}</td>
                   <td style={{ padding: "12px" }}>
@@ -93,6 +95,7 @@ export default function Ranking() {
             })}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

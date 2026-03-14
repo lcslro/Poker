@@ -37,7 +37,7 @@ function Players() {
       {adding && (
         <div className="card" style={{ marginBottom: 20 }}>
           <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 15, marginBottom: 16 }}>Novo jogador</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 12, alignItems: "flex-end" }}>
+          <div className="players-form">
             <div>
               <label className="label">Nome</label>
               <input className="input" placeholder="Nome do jogador" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
@@ -54,7 +54,7 @@ function Players() {
           </div>
         </div>
       )}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+      <div className="players-grid">
         {players.map((p) => (
           <div key={p.id} className="card anim-fade" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -96,7 +96,7 @@ function AppInner() {
       <style>{globalCss}</style>
       <div style={{ display: "flex", minHeight: "100vh" }}>
         <Sidebar page={page} setPage={setPage} />
-        <main className="felt-texture" style={{ flex: 1, marginLeft: 220, padding: "32px 36px", minHeight: "100vh" }}>
+        <main className="felt-texture main-content">
           {pages[page]}
         </main>
       </div>

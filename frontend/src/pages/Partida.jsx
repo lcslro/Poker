@@ -125,7 +125,8 @@ export default function Partida({ setPage, activeSessionId, setActiveSessionId }
       </div>
 
       <div className="card">
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <div className="table-scroll">
+        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 420 }}>
           <thead>
             <tr style={{ borderBottom: `1px solid ${G.border}` }}>
               {["Jogador", "Valor final", "Resultado", ""].map(h => (
@@ -169,6 +170,7 @@ export default function Partida({ setPage, activeSessionId, setActiveSessionId }
             })}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

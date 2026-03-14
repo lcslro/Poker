@@ -25,7 +25,7 @@ export default function Dashboard({ setPage }) {
         action={<button className="btn btn-gold" onClick={() => setPage("session")}>♠ Nova Partida</button>}
       />
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 24 }}>
+      <div className="stats-grid">
         {[
           { label: "Partidas Realizadas", value: sessions.length,                              icon: "♣" },
           { label: "Jogadores Ativos",    value: rankings.length,                              icon: "◈" },
@@ -40,7 +40,7 @@ export default function Dashboard({ setPage }) {
         ))}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+      <div className="two-col-grid">
         <div className="card anim-fade">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
             <span style={{ fontFamily: "'Playfair Display', serif", fontSize: 15, fontWeight: 600 }}>Líderes</span>
