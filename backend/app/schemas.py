@@ -102,3 +102,4 @@ class PlayerRanking(BaseModel):
     wins: int
     losses: int
     total_profit: float
+    mvp_count: int = 0
