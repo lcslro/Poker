@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { G } from "../styles";
 import { Avatar, MoneyBadge, Header } from "../components/UI";
-import { getSessions, createSession, getPlayers, getEntries, createEntry, updateEntry, CHIP_VALUE } from "../api/index";
+import { getSessions, createSession, getPlayers, getEntries, createEntry, updateEntry, addReentry, CHIP_VALUE } from "../api/index";
 
 export default function Partida({ setPage, activeSessionId, setActiveSessionId }) {
   const [session, setSession] = useState(null);
@@ -17,6 +17,10 @@ export default function Partida({ setPage, activeSessionId, setActiveSessionId }
   // Edição de valor final
   const [editId, setEditId] = useState(null);
   const [editVal, setEditVal] = useState("");
+
+  // Re-entrada
+  const [reentryId, setReentryId] = useState(null);
+  const [reentryVal, setReentryVal] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -61,6 +65,16 @@ export default function Partida({ setPage, activeSessionId, setActiveSessionId }
     const updated = await updateEntry(entryId, chipsEnd);
     setEntries(prev => prev.map(e => e.id === entryId ? updated : e));
     setEditId(null);
+  };
+
+  const handleSaveReentry = async (entryId) => {
+    const val = parseFloat(reentryVal);
+    if (isNaN(val) || val <= 0) return;
+    const chipsAdd = val / CHIP_VALUE;
+    const updated = await addReentry(entryId, chipsAdd);
+    setEntries(prev => prev.map(e => e.id === entryId ? updated : e));
+    setReentryId(null);
+    setReentryVal("");
   };
 
   const getPlayerName = (playerId) => players.find(p => p.id === playerId)?.name ?? "?";
@@ -129,15 +143,16 @@ export default function Partida({ setPage, activeSessionId, setActiveSessionId }
         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 420 }}>
           <thead>
             <tr style={{ borderBottom: `1px solid ${G.border}` }}>
-              {["Jogador", "Valor final", "Resultado", ""].map(h => (
+              {["Jogador", "Investido", "Valor final", "Resultado", ""].map(h => (
                 <th key={h} style={{ textAlign: "left", padding: "8px 12px", fontSize: 11, color: G.textMuted, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase" }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {entries.map((e, i) => {
+              const totalInvested = Math.round((e.chips_start + (e.reentries || 0)) * CHIP_VALUE * 100) / 100;
               const finalAmount = e.chips_end != null ? Math.round(e.chips_end * CHIP_VALUE * 100) / 100 : 0;
-              const profit = finalAmount - session.buy_in;
+              const profit = finalAmount - totalInvested;
               return (
                 <tr key={e.id} style={{ borderBottom: i < entries.length - 1 ? `1px solid ${G.border}` : "none" }}>
                   <td style={{ padding: "12px" }}>
@@ -145,6 +160,23 @@ export default function Partida({ setPage, activeSessionId, setActiveSessionId }
                       <Avatar letter={getPlayerName(e.player_id)[0]} size={30} />
                       <span style={{ fontSize: 14 }}>{getPlayerName(e.player_id)}</span>
                     </div>
+                  </td>
+                  <td style={{ padding: "12px" }}>
+                    {reentryId === e.id ? (
+                      <div style={{ display: "flex", gap: 6 }}>
+                        <input className="input" style={{ width: 100 }} value={reentryVal} placeholder="R$"
+                          onChange={ev => setReentryVal(ev.target.value)}
+                          onKeyDown={ev => ev.key === "Enter" && handleSaveReentry(e.id)} autoFocus />
+                        <button className="btn btn-primary btn-sm" onClick={() => handleSaveReentry(e.id)}>✓</button>
+                        <button className="btn btn-ghost btn-sm" onClick={() => setReentryId(null)}>✕</button>
+                      </div>
+                    ) : (
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 13 }}>R${totalInvested.toFixed(2)}</span>
+                        <button className="btn btn-ghost btn-sm" onClick={() => { setReentryId(e.id); setReentryVal(""); setEditId(null); }}
+                          title="Adicionar re-entrada">+</button>
+                      </div>
+                    )}
                   </td>
                   <td style={{ padding: "12px" }}>
                     {editId === e.id ? (
@@ -161,7 +193,7 @@ export default function Partida({ setPage, activeSessionId, setActiveSessionId }
                   </td>
                   <td style={{ padding: "12px" }}><MoneyBadge value={e.chips_end != null ? profit : null} /></td>
                   <td style={{ padding: "12px" }}>
-                    <button className="btn btn-ghost btn-sm" onClick={() => { setEditId(e.id); setEditVal(String(finalAmount)); }}>
+                    <button className="btn btn-ghost btn-sm" onClick={() => { setEditId(e.id); setEditVal(String(finalAmount)); setReentryId(null); }}>
                       Editar
                     </button>
                   </td>

@@ -51,6 +51,8 @@ export const createEntry = (sessionId, playerId, chipsStart) =>
   apiFetch("/entries/", { method: "POST", body: JSON.stringify({ session_id: sessionId, player_id: playerId, chips_start: chipsStart }) });
 export const updateEntry = (entryId, chipsEnd) =>
   apiFetch(`/entries/${entryId}`, { method: "PUT", body: JSON.stringify({ chips_end: chipsEnd }) });
+export const addReentry = (entryId, chipsAdd) =>
+  apiFetch(`/entries/${entryId}/reentry`, { method: "PATCH", body: JSON.stringify({ chips_add: chipsAdd }) });
 
 // --- Settle ---
 export const postSettle = (sessionId) => apiFetch(`/settle/${sessionId}`, { method: "POST" });

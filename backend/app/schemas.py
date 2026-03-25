@@ -71,12 +71,17 @@ class EntryUpdate(BaseModel):
     chips_end: float
 
 
+class EntryReentry(BaseModel):
+    chips_add: float
+
+
 class EntryOut(BaseModel):
     id: int
     session_id: int
     player_id: int
     chips_start: float
     chips_end: Optional[float] = None
+    reentries: float = 0.0
 
     model_config = {"from_attributes": True}
 

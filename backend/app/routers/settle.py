@@ -13,7 +13,7 @@ def _calc_settlements(entries: list[Entry], chip_value: float) -> list[dict]:
     balances = [
         {
             "player_id": e.player_id,
-            "balance": round((e.chips_end - e.chips_start) * chip_value, 2),
+            "balance": round((e.chips_end - (e.chips_start + (e.reentries or 0))) * chip_value, 2),
         }
         for e in entries
         if e.chips_end is not None

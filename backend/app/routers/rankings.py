@@ -18,18 +18,20 @@ def get_rankings(db: DBSession = Depends(get_db), _=Depends(get_current_player))
     # Calcula MVP por sessão fechada
     closed_sessions = db.query(GameSession).filter(GameSession.status == "closed").all()
     mvp_counts: dict[int, int] = defaultdict(int)
+    mvp_by_session: dict[int, int] = {}  # session_id -> player_id
     for session in closed_sessions:
         best_player_id = None
         best_profit = None
         for entry in session.entries:
             if entry.chips_end is None:
                 continue
-            profit = (entry.chips_end - entry.chips_start) * session.chip_value
+            profit = (entry.chips_end - (entry.chips_start + (entry.reentries or 0))) * session.chip_value
             if best_profit is None or profit > best_profit:
                 best_profit = profit
                 best_player_id = entry.player_id
         if best_player_id is not None:
             mvp_counts[best_player_id] += 1
+            mvp_by_session[session.id] = best_player_id
 
     result = []
     for player in players:
@@ -38,16 +40,14 @@ def get_rankings(db: DBSession = Depends(get_db), _=Depends(get_current_player))
             continue
 
         sessions_played = len(entries)
-        profits = []
-        for e in entries:
-            if e.chips_end is not None:
-                session = e.session
-                profit = round((e.chips_end - e.chips_start) * session.chip_value, 2)
-                profits.append(profit)
+        settled = [
+            (e, round(((e.chips_end if e.chips_end is not None else 0) - (e.chips_start + (e.reentries or 0))) * e.session.chip_value, 2))
+            for e in entries
+        ]
 
-        wins = sum(1 for p in profits if p > 0)
-        losses = sum(1 for p in profits if p <= 0)
-        total_profit = round(sum(profits), 2)
+        wins = sum(1 for e, p in settled if p > 0 or (p <= 0 and mvp_by_session.get(e.session_id) == player.id))
+        losses = sum(1 for e, p in settled if p <= 0 and mvp_by_session.get(e.session_id) != player.id)
+        total_profit = round(sum(p for _, p in settled), 2)
 
         result.append(PlayerRanking(
             player_id=player.id,

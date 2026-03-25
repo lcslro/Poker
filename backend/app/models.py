@@ -38,6 +38,7 @@ class Entry(Base):
     player_id = Column(Integer, ForeignKey("players.id"), nullable=False)
     chips_start = Column(Float, nullable=False)
     chips_end = Column(Float, nullable=True)
+    reentries = Column(Float, nullable=False, default=0.0)
 
     session = relationship("Session", back_populates="entries")
     player = relationship("Player", back_populates="entries")
