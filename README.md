@@ -1,53 +1,66 @@
-[README_poker.md](https://github.com/user-attachments/files/26361501/README_poker.md)
-# PokerNight 🃏
+# Poker Manager 🃏
 
-Gerenciador completo de partidas mensais de poker. Sistema full stack com backend em FastAPI, frontend web em React e aplicativo mobile em Flutter.
+Full-stack poker management platform for monthly home games. FastAPI REST API, React web app and a Flutter mobile application.
 
 ---
 
+## Overview
+
+Organizing recurring poker nights usually means spreadsheets and manual math. Poker Manager centralizes everything: players register in the app, matches are created with buy-in and participants, results are recorded per player, and the system calculates who owes whom so debts can be settled with the minimum number of transfers.
+
+## ✨ Features
+
+- 🔐 Email/password authentication (JWT) — access restricted to registered players
+- 🃏 Match creation with date, buy-in and player selection
+- 💰 Per-player result registration (profit/loss)
+- 🔄 **Automatic settlement** — minimum-transfer algorithm to clear debts between players
+- 🏆 Overall ranking with wins, losses, win rate and total balance
+- 📊 Dashboard with metrics: matches played, biggest winner, last buy-in and leaders
+- 👥 Player registration and management
+- 📱 Cross-platform mobile app (Android & iOS) built with Flutter
+
+## 🏗 Architecture
+
+```
+┌─────────────┐      ┌──────────────────┐      ┌─────────┐
+│ React (web) │──────▶│  FastAPI REST API │─────▶│ SQLite  │
+└─────────────┘      └──────────────────┘      └─────────┘
+┌───────────────┐            ▲
+│ Flutter (app) │────────────┘
+└───────────────┘
+```
+
+- **Backend** — FastAPI REST API (JSON) with JWT authentication, SQLAlchemy models and SQLite persistence
+- **Web frontend** — React (Vite) SPA; calls the API through a dev proxy (`/api` → `localhost:8000`)
+- **Mobile** — Flutter application consuming the same REST API
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Backend | Python 3.11 + FastAPI |
+| Frontend Web | React (Vite) |
+| Mobile | Flutter (Dart) |
+| Database | SQLite |
+| API | REST (JSON) |
+
 ## 📸 Screenshots
 
-> Login · Dashboard · Nova Partida · Ranking · Jogadores
-
-<!-- Substitua os caminhos abaixo pelos prints do projeto no repositório -->
 | Login | Dashboard |
 |-------|-----------|
 | ![Login](docs/login.png) | ![Dashboard](docs/dashboard.png) |
 
-| Nova Partida | Ranking |
+| New Match | Ranking |
 |--------------|---------|
 | ![Partida](docs/partida.png) | ![Ranking](docs/ranking.png) |
 
----
-
-## ✨ Funcionalidades
-
-- 🔐 Autenticação por e-mail e senha (acesso restrito a jogadores cadastrados)
-- 🃏 Criação de partidas com data, buy-in e seleção de jogadores
-- 💰 Registro de resultado por jogador (lucro/prejuízo)
-- 🔄 **Acerto automático** — algoritmo de transferências mínimas para quitar dívidas entre jogadores
-- 🏆 Ranking geral com vitórias, derrotas, win rate e saldo total
-- 📊 Dashboard com métricas: partidas realizadas, maior ganhador, último buy-in e líderes
-- 👥 Cadastro e gerenciamento de jogadores
-- 📱 App mobile multiplataforma (Android e iOS) em Flutter
-
----
-
-## 🛠 Stack
-
-| Camada | Tecnologia |
+| Players | Settlement |
 |--------|-----------|
-| Backend | Python 3.11 + FastAPI |
-| Frontend Web | React |
-| Mobile | Flutter (Dart) |
-| Banco de Dados | SQLite |
-| API | REST (JSON) |
+| ![Jogadores](docs/jogadores.png) | ![Acerto](docs/acerto.png) |
 
----
+## 🚀 How to Run
 
-## 🚀 Como rodar localmente
-
-### Pré-requisitos
+### Prerequisites
 - Python 3.11+
 - Node.js 18+
 - Flutter SDK
@@ -56,39 +69,42 @@ Gerenciador completo de partidas mensais de poker. Sistema full stack com backen
 ```bash
 cd backend
 pip install -r requirements.txt
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 ```
-API disponível em `http://localhost:8000`
+API available at `http://localhost:8000`
 
-### Frontend Web
+### Web Frontend
 ```bash
 cd frontend
 npm install
-npm start
+npm run dev
 ```
-Acesse `http://localhost:3000`
+Open `http://localhost:3000`
 
-### App Mobile
+### Mobile App
 ```bash
 cd mobile
 flutter pub get
 flutter run
 ```
 
----
-
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
 ```
 Poker/
-├── backend/        # API REST em FastAPI
-├── frontend/       # Interface web em React
-└── mobile/         # App Flutter (Android & iOS)
+├── backend/        # FastAPI REST API
+│   └── app/
+│       ├── routers/    # auth, players, sessions, entries, settle, rankings
+│       ├── models.py   # SQLAlchemy models
+│       ├── schemas.py  # Pydantic schemas
+│       └── database.py # SQLite connection
+├── frontend/       # React web interface (Vite)
+├── mobile/         # Flutter app (Android & iOS)
+└── docs/           # Screenshots
 ```
 
----
+## 🔮 Future Improvements
 
-## 👨‍💻 Autor
-
-**Lucas Rocha de Oliveira**
-[github.com/lcslro](https://github.com/lcslro)
+- Automated tests for the settlement algorithm
+- CI pipeline for backend and frontend
+- Deployment of the API and web app
